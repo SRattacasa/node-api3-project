@@ -5,11 +5,13 @@ const userRouter = require("./users/userRouter")
 const postRouter = require("./posts/postRouter")
 
 
+
 const server = express()
 const port = 5001
 
 
 
+server.use(express.json())
 server.use(logger())
 server.use("/users", userRouter)
 server.use("/posts", postRouter)

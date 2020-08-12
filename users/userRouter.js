@@ -6,7 +6,10 @@ const posts = require("../posts/postDb")
 const router = express.Router();
 
 router.post('/', validateUser(), (req, res) => {
-  // do your magic!
+  users.insert(req.body)
+  .then((user) => { 
+    res.status(201).json(user)
+  })
 });
 
 router.post('/:id/posts', (req, res) => {
@@ -36,7 +39,7 @@ router.delete('/:id',  validateUserId(), (req, res) => {
 });
 
 router.put('/:id',  validateUserId(), (req, res) => {
-  users.update(req.params.id, req.body.changes)
+  users.update(req.params.id, req.body)
   .then(user => { 
     res.status(201).json(req.body)
   })
@@ -48,7 +51,7 @@ router.put('/:id',  validateUserId(), (req, res) => {
 
 //custom middleware 
 
-function validateUserId(req, res, next) {
+function validateUserId() {
   return (req, res, next) => { 
     users.getById(req.params.id)
     .then(user => { 
@@ -68,13 +71,12 @@ function validateUserId(req, res, next) {
   }
 }
 
-function validateUser(req, res, next) {
-  return (req, res, next) => { 
-    if (!req.body.name) 
-      {
-        res.status(404).json({message: "Oh no, that user is missing."})
-      } 
-      next()
+function validateUser() {
+  return (req, res, next) => {
+   if (!req.body.name) {
+    res.status(400).json({message: "You suck"})
+   }
+   next()
   }
 }
 
