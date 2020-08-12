@@ -12,8 +12,13 @@ router.post('/', validateUser(), (req, res) => {
   })
 });
 
-router.post('/:id/posts', (req, res) => {
-  // do your magic!
+router.post('/:id/posts', validatePost(), validateUserId(), (req, res) => {
+  const somethingToSend = {text: req.body.text, user_id: req.user.id}
+  posts.insert(somethingToSend)
+  .then(bananaword => { 
+    res.status(201).json(req.body.text)
+  })
+  .catch(error => { console.log(error)})
 });
 
 router.get('/', (req, res) => {
@@ -28,7 +33,10 @@ router.get('/:id', validateUserId(), (req, res) => {
 });
 
 router.get('/:id/posts', validateUserId(), (req, res) => {
-  // do your magic!
+  users.getUserPosts(req.user.id)
+  .then(user => { 
+    res.status(200).json(user)
+  })
 });
 
 router.delete('/:id',  validateUserId(), (req, res) => {
@@ -80,12 +88,13 @@ function validateUser() {
   }
 }
 
-function validatePost(req, res, next) {
+function validatePost() {
   // do your magic!
   return (req, res, next) => { 
     if (!req.body.text) { 
       res.status(400).json({message: "missing required text field"})
     }
+    next()
   }
 }
 
